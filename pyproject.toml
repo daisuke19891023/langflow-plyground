@@ -12,6 +12,9 @@ load-dotenv = "^0.1.0"
 tiktoken = "*"
 langchain = "*"
 langsmith = "*"
+streamlit = "*"
+streamlit-chat = "*"
+google-api-python-client = "^2.96.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.3.0"
@@ -52,6 +55,7 @@ exclude_lines = [
 ]
 
 [tool.poe.tasks]
+run= "streamlit run mymodule/app.py"
 lint = "ruff check mymodule"
 test = "pytest"
 cover = "pytest --cov=mymodule --cov-report xml"
