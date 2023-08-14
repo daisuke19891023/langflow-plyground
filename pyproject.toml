@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "mymodule"
+name = "langchain-playground"
 version = "0.1.0"
 description = ""
 authors = ["Okamoto Daisuke <okadaih11023@gmail.com>"]
@@ -7,9 +7,11 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-openai = "^0.27.6"
+openai = "*"
 load-dotenv = "^0.1.0"
-tiktoken = "^0.3.3"
+tiktoken = "*"
+langchain = "*"
+langsmith = "*"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.3.0"
