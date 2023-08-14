@@ -10,8 +10,18 @@ load_dotenv()
 
 
 @st.cache_resource
-def load_prompt():
+def load_translate_prompt():
     template = "You are a helpful assistant that translates {input_language} to {output_language}."
+    system_message_prompt = SystemMessagePromptTemplate.from_template(template)
+    human_template = "{text}"
+    human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+    return chat_prompt
+
+
+@st.cache_resource
+def load_answer_provided_language_prompt():
+    template = "You are a helpful assistant. Please provide the final output in the same language as the input text."
     system_message_prompt = SystemMessagePromptTemplate.from_template(template)
     human_template = "{text}"
     human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
@@ -26,12 +36,16 @@ def load_chain() -> LLMChain:
     # template = "{history} let's think step by step"
     # prompt = PromptTemplate(input_variables=["history"], template=template)
     chat = ChatOpenAI()
-    chain = LLMChain(llm=chat, prompt=load_prompt(), verbose=True)
+    # chain = LLMChain(llm=chat, prompt=load_translate_prompt(), verbose=True)
+    chain = LLMChain(llm=chat, prompt=load_answer_provided_language_prompt(), verbose=True)
     return chain
 
 
 # streamlit part
 st.header("Simple Chat")
+
+# show explain this is simple chat using LLMChain
+st.write("LLMChain and Prompt Template Sample")
 
 chain: LLMChain = load_chain()
 language_options = ["Japanese", "English", "Chinese"]
