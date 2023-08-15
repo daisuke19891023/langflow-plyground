@@ -3,7 +3,7 @@
 {
   "name": "langchian-playground-dev",
   // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-  "image": "mcr.microsoft.com/devcontainers/python:3.11-bullseye",
+  "build": { "dockerfile": "Dockerfile" },
   "containerEnv": {
     "TZ": "Asia/Tokyo"
   },
