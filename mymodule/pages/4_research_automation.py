@@ -4,6 +4,7 @@ from langchain.chains import RetrievalQAWithSourcesChain
 from langchain.chat_models.openai import ChatOpenAI
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.retrievers.web_research import WebResearchRetriever
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.utilities import GoogleSearchAPIWrapper
 from langchain.vectorstores import Chroma
 from streamlit_chat import message
@@ -12,7 +13,6 @@ __import__("pysqlite3")
 import sys
 
 sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
-
 load_dotenv()
 
 
@@ -22,12 +22,11 @@ def load_chain():
     vectorstore = Chroma(embedding_function=OpenAIEmbeddings(), persist_directory="./chroma_db_oai")
 
     # LLM
-    llm_for_search = ChatOpenAI(model="gpt-3.5-turbo-16k")
-    llm = ChatOpenAI()
+    llm = ChatOpenAI(temperature=0)
 
     # Search
     search = GoogleSearchAPIWrapper()
-    web_research_retriever: WebResearchRetriever = WebResearchRetriever.from_llm(vectorstore=vectorstore, llm=llm_for_search, search=search)
+    web_research_retriever: WebResearchRetriever = WebResearchRetriever(num_search_results=5, vectorstore=vectorstore, llm_chain=llm, search=search, text_splitter=RecursiveCharacterTextSplitter)
 
     qa_chain = RetrievalQAWithSourcesChain.from_chain_type(llm, retriever=web_research_retriever)
     return qa_chain
@@ -54,12 +53,12 @@ with st.form(key="form", clear_on_submit=True):
 
 
 if submit:
-    output: str = chain({"question": user_input})
+    output: str = chain.run(input=user_input)
 
     st.session_state.past.append(user_input)
     st.session_state.generated.append(output)
 
 if st.session_state["generated"]:
     for i in range(len(st.session_state["generated"]) - 1, -1, -1):
-        message(st.session_state["generated"][i])
+        message(st.session_state["generated"][i].json(indent=4))
         message(st.session_state["past"][i], is_user=True, key=str(i) + "_user")
